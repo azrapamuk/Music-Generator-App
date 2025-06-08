@@ -1,0 +1,7 @@
+ttkbootstrap
+numpy
+pygame
+scipy
+matplotlib
+pretty-midi
+music21

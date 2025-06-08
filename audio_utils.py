@@ -1,33 +1,35 @@
 # audio_utils.py
+
 import os
 import subprocess
 import time
 import pygame
 import pretty_midi
 
-# Funkcija za logovanje (da ne zavisimo od UI komponente direktno)
+# Za logovanje poruka, nezavisno od UI komponente
 def _log(message, logger_queue=None):
     if logger_queue:
         logger_queue.put(message + "\n")
     else:
         print(message)
 
+
+# Konvertuje listu rječnika sa podacima o notama u MIDI fajl
 def melody_dict_list_to_midi(melody_dicts, output_filename, instrument_name, bpm, logger_queue=None):
-    """Konvertuje listu rečnika nota u MIDI fajl."""
     try:
         actual_bpm = float(bpm)
         if actual_bpm <= 0:
             actual_bpm = 120.0
-            _log(f"Upozorenje: BPM vrednost {bpm} nije validna, korišćen podrazumevani 120 BPM.", logger_queue)
+            _log(f"Upozorenje: BPM vrijednost {bpm} nije validna, koristi se podrazumijevanih 120 BPM.", logger_queue)
         midi_data = pretty_midi.PrettyMIDI(initial_tempo=actual_bpm)
     except ValueError:
-        _log(f"Upozorenje: Nije moguće konvertovati BPM '{bpm}' u broj, korišćen podrazumevani 120 BPM.", logger_queue)
+        _log(f"Upozorenje: Nije moguće konvertovati BPM '{bpm}' u broj. Koristi se podrazumijevanih 120 BPM.", logger_queue)
         midi_data = pretty_midi.PrettyMIDI(initial_tempo=120.0)
 
     try:
         instrument_program = pretty_midi.instrument_name_to_program(instrument_name)
     except ValueError:
-        _log(f"Upozorenje: Nepoznato ime instrumenta '{instrument_name}'. Koristi se podrazumevani 'Acoustic Grand Piano'.", logger_queue)
+        _log(f"Upozorenje: Nepoznato ime instrumenta '{instrument_name}'. Koristi se podrazumijevani 'Acoustic Grand Piano'.", logger_queue)
         instrument_program = pretty_midi.instrument_name_to_program('Acoustic Grand Piano')
 
     instrument = pretty_midi.Instrument(program=instrument_program)
@@ -46,11 +48,11 @@ def melody_dict_list_to_midi(melody_dicts, output_filename, instrument_name, bpm
         midi_data.write(output_filename)
         return output_filename
     except Exception as e:
-        _log(f"Greška pri pisanju MIDI fajla {output_filename}: {e}", logger_queue)
+        _log(f"Greška pri pisanju MIDI fajla '{output_filename}': {e}", logger_queue)
         return None
-
+    
+# Konvertuje MIDI fajl u WAV format koristeći FluidSynth i zadani SoundFont
 def convert_midi_to_wav(midi_file_path, wav_file_path, sound_font_sf2, logger_queue=None):
-    """Konvertuje MIDI fajl u WAV koristeći FluidSynth."""
     if not os.path.exists(sound_font_sf2):
         _log(f"Greška: SoundFont fajl nije pronađen: {sound_font_sf2}", logger_queue)
         return None
@@ -80,27 +82,31 @@ def convert_midi_to_wav(midi_file_path, wav_file_path, sound_font_sf2, logger_qu
             if os.path.exists(wav_file_path) and os.path.getsize(wav_file_path) > 0:
                 return wav_file_path
             else:
-                _log("Greška: FluidSynth se završio bez greške, ali WAV fajl nije kreiran.", logger_queue)
-                if stderr_data: _log(f"FluidSynth stderr: {stderr_data.strip()}", logger_queue)
+                _log("Greška: FluidSynth se završio bez prijavljene greške, ali WAV fajl nije kreiran.", logger_queue)
+                if stderr_data:
+                    _log(f"FluidSynth stderr: {stderr_data.strip()}", logger_queue)
                 return None
         else:
             _log(f"Greška prilikom konverzije MIDI u WAV. FluidSynth kod greške: {process.returncode}", logger_queue)
-            if stderr_data: _log(f"FluidSynth stderr: {stderr_data.strip()}", logger_queue)
+            if stderr_data:
+                _log(f"FluidSynth stderr: {stderr_data.strip()}", logger_queue)
             return None
     except subprocess.TimeoutExpired:
-        _log("Greška: FluidSynth je prekoračio vreme (20s) i zaglavio se.", logger_queue)
-        if process: process.kill()
+        _log("Greška: FluidSynth je prekoračio maksimalno vrijeme izvršavanja (20s).", logger_queue)
+        if process:
+            process.kill()
         return None
     except FileNotFoundError:
-        _log(f"Greška: FluidSynth nije pronađen. Proverite da li je '{fluidsynth_executable}' instaliran i u PATH-u.", logger_queue)
+        _log(f"Greška: FluidSynth nije pronađen. Provjerite da li je '{fluidsynth_executable}' instaliran i dodan u PATH.", logger_queue)
         return None
     except Exception as e:
-        _log(f"Neočekivana greška tokom WAV konverzije: {e}", logger_queue)
-        if process and process.poll() is None: process.kill()
+        _log(f"Neočekivana greška tokom konverzije u WAV: {e}", logger_queue)
+        if process and process.poll() is None:
+            process.kill()
         return None
 
+# Funkcija za puštanje WAV fajla koristeći pygame.mixer
 def play_audio_with_pygame(wav_path):
-    """Robusna, izolovana funkcija za reprodukciju zvuka korišćenjem pygame.mixer."""
     clean_path = os.path.normpath(wav_path.strip())
     try:
         pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=2048)
@@ -109,6 +115,6 @@ def play_audio_with_pygame(wav_path):
         while pygame.mixer.music.get_busy():
             time.sleep(0.1)
     except Exception as e:
-        print(f"[Pygame Playback Process Error]: {e}")
+        print(f"[Greška tokom puštanja zvuka u pygame-u]: {e}")
     finally:
         pygame.mixer.quit()

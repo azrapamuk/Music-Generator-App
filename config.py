@@ -1,4 +1,5 @@
 # config.py
+
 import os
 
 # Osnovne putanje
@@ -15,7 +16,7 @@ DEFAULT_VELOCITY = 100
 MIN_PITCH_GA = 40
 MAX_PITCH_GA = 84
 
-# Podrazumevani parametri za Genetički Algoritam (GA)
+# Parametri za Genetički Algoritam (GA)
 GA_POPULATION_SIZE = 30
 GA_NUM_GENERATIONS = 25
 GA_MELODY_LENGTH = 30

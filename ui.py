@@ -130,7 +130,7 @@ class MusicGeneratorApp:
         ga_frame = ttk.LabelFrame(parent, text="2. GA Parametri", padding=10)
         ga_frame.grid(row=1, column=0, sticky="ew", pady=(0, 20))
         ga_frame.grid_columnconfigure(1, weight=1)
-        param_entries = [("Populacija:", self.population_size_var, 10, 200), ("Generacije:", self.generations_var, 5, 200), ("Duljina melodije:", self.melody_length_var, 5, 100), ("BPM:", self.bpm_var, 30, 240)]
+        param_entries = [("Populacija:", self.population_size_var, 10, 200), ("Generacije:", self.generations_var, 5, 200), ("Dužina melodije:", self.melody_length_var, 5, 100), ("BPM:", self.bpm_var, 30, 240)]
         rate_entries = [("Stopa mutacije:", self.mutation_rate_var, 0, 100), ("Stopa križanja:", self.crossover_rate_var, 0, 100)]
         for i, (text, var, p_from, p_to) in enumerate(param_entries):
             ttk.Label(ga_frame, text=text).grid(row=i, column=0, sticky=W, pady=3)

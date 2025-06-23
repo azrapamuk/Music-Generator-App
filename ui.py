@@ -36,7 +36,7 @@ class MusicGeneratorApp:
     def __init__(self, root):
         self.root = root
         self.style = ttk.Style()
-        self.root.title("Glazbeni Generator s genetskim algoritmom")
+        self.root.title("Muzički Generator s genetskim algoritmom")
         self.root.geometry("1000x700")
         self.root.protocol("WM_DELETE_WINDOW", self._on_closing)
         pygame.mixer.init()
@@ -67,6 +67,8 @@ class MusicGeneratorApp:
         self.playhead_line = None # Vertikalna linija koja prati reprodukciju
         self.animation_job = None # ID posla za animaciju linije
         self.total_audio_duration = 0
+        self.playback_check_job = None 
+
 
         # Postavljanje korisničkog interfejsa i provjera potrebnih resursa
         self.setup_cool_ui()
@@ -130,8 +132,8 @@ class MusicGeneratorApp:
         ga_frame = ttk.LabelFrame(parent, text="2. GA Parametri", padding=10)
         ga_frame.grid(row=1, column=0, sticky="ew", pady=(0, 20))
         ga_frame.grid_columnconfigure(1, weight=1)
-        param_entries = [("Populacija:", self.population_size_var, 10, 200), ("Generacije:", self.generations_var, 5, 200), ("Duljina melodije:", self.melody_length_var, 5, 100), ("BPM:", self.bpm_var, 30, 240)]
-        rate_entries = [("Stopa mutacije:", self.mutation_rate_var, 0, 100), ("Stopa križanja:", self.crossover_rate_var, 0, 100)]
+        param_entries = [("Populacija:", self.population_size_var, 10, 200), ("Generacije:", self.generations_var, 5, 200), ("Dužina melodije:", self.melody_length_var, 5, 100), ("BPM:", self.bpm_var, 30, 240)]
+        rate_entries = [("Stopa mutacije:", self.mutation_rate_var, 0, 100), ("Stopa ukrštanja:", self.crossover_rate_var, 0, 100)]
         for i, (text, var, p_from, p_to) in enumerate(param_entries):
             ttk.Label(ga_frame, text=text).grid(row=i, column=0, sticky=W, pady=3)
             scale = ttk.Scale(ga_frame, from_=p_from, to=p_to, variable=var); scale.grid(row=i, column=1, sticky="ew", padx=5)

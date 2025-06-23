@@ -1,4 +1,4 @@
-# Muzički Generator s Genetskim Algoritmom
+# ♫⋆｡ Muzički Generator s Genetskim Algoritmom
 
 Ova aplikacija koristi genetski algoritam za generiranje novih muzičkih melodija. Aplikacija prvo uči muzički stil iz zadanog skupa MIDI datoteka, a zatim evoluira nove melodije koje su stilski slične naučenom uzorku.
 
